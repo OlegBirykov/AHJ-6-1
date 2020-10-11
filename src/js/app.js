@@ -1,2 +1,4 @@
-// eslint-disable-next-line no-console
-console.log('it works!');
+import TrelloWidget from './TrelloWidget';
+
+const trello = new TrelloWidget(document.querySelector('.container'));
+trello.bindToDOM();

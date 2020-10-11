@@ -35,6 +35,7 @@ body {
 
 [data-widget=trello] a:hover {
   background-color: #ff8800;
+  opacity: 1;
 }
 
 [data-widget=trello] button {
@@ -43,16 +44,17 @@ body {
 
 [data-widget=trello] button:hover {
   background-color: #ff8800;
+  opacity: 1;
 }
 
-[data-widget=trello] [data-id=col] {
+[data-widget=trello] [data-id=column] {
   width: 250px;
   padding: 0 10px;
   background-color: #e0e0e0;
   border-radius: 3px;
 }
 
-[data-widget=trello] [data-id=col]:not(:first-child) {
+[data-widget=trello] [data-id=column]:not(:first-child) {
   margin-left: 10px;
 }
 
@@ -108,7 +110,7 @@ body {
   padding: 10px 0 3px 0;
 }
 
-[data-widget=trello] [data-id=add-form] textarea {
+[data-widget=trello] [data-id=add-form-text] {
   width: 100%;
   border-radius: 3px;
   padding: 8px;
