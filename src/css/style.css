@@ -79,6 +79,15 @@ body {
   background-color: white;
   border-radius: 3px;
   padding: 8px;
+  cursor: default;
+}
+
+[data-widget=trello] [data-id=card-drag] {
+  position: absolute;
+  background-color: white;
+  border-radius: 3px;
+  padding: 8px;
+  cursor: grabbing;
 }
 
 [data-widget=trello] [data-id=card]:not(:first-child) {
@@ -89,7 +98,16 @@ body {
   background-color: #f0f0f0; 
 }
 
+[data-widget=trello] [data-id=card] p{
+  pointer-events: none;
+}
+
+[data-widget=trello] [data-id=card-drag] p{
+  pointer-events: none;
+}
+
 [data-widget=trello] [data-id=delete-button] {
+  display: none;
   position: absolute;
   top: 2px;
   right: 2px;
@@ -99,6 +117,10 @@ body {
   text-align: center;
   background-color: #e0e0e0;
   border-radius: 3px;
+}
+
+[data-widget=trello] [data-id=card]:hover [data-id=delete-button] {
+  display: block;
 }
 
 [data-widget=trello] [data-id=add-form-show] {
