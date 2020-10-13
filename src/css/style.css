@@ -88,9 +88,20 @@ body {
   border-radius: 3px;
   padding: 8px;
   cursor: grabbing;
+  pointer-events: none;
+}
+
+[data-widget=trello] [data-id=drop-target] {
+  background-color: #f0f0f0;
+  border-radius: 3px;
+  padding: 8px;
 }
 
 [data-widget=trello] [data-id=card]:not(:first-child) {
+  margin-top: 10px;
+}
+
+[data-widget=trello] [data-id=drop-target]:not(:first-child) {
   margin-top: 10px;
 }
 

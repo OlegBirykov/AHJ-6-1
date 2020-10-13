@@ -3,6 +3,7 @@ export default class TrelloWidget {
     this.container = container;
     this.data = [];
     this.dragEl = null;
+    this.dropTarget = null;
   }
 
   static get markup() {
@@ -172,7 +173,7 @@ export default class TrelloWidget {
     this.widget.appendChild(this.dragEl);
 
     const {
-      x, y, width,
+      x, y, width, height,
     } = event.target.getBoundingClientRect();
     this.dragEl.style.left = `${x}px`;
     this.dragEl.style.top = `${y}px`;
@@ -180,6 +181,17 @@ export default class TrelloWidget {
 
     this.deltaXDrag = x - event.pageX;
     this.deltaYDrag = y - event.pageY;
+
+    const colIndex = event.target.closest(this.constructor.columnSelector)
+      .dataset.index;
+    const rowIndex = event.target.querySelector('a').dataset.index;
+    this.data[colIndex].splice(rowIndex, 1);
+
+    this.dropTarget = event.target;
+    this.dropTarget.innerHTML = '';
+    this.dropTarget.dataset.id = 'drop-target';
+    this.dropTarget.style.width = `${width}px`;
+    this.dropTarget.style.height = `${height}px`;
   }
 
   onDrag(event) {
@@ -187,6 +199,7 @@ export default class TrelloWidget {
       return;
     }
     event.preventDefault();
+    console.log(document.elementFromPoint(event.pageX, event.pageY));
     this.dragEl.style.left = `${event.pageX + this.deltaXDrag}px`;
     this.dragEl.style.top = `${event.pageY + this.deltaYDrag}px`;
   }
@@ -196,8 +209,14 @@ export default class TrelloWidget {
       return;
     }
     event.preventDefault();
+
     this.dragEl.remove();
     this.dragEl = null;
+    this.dropTarget.remove();
+    this.dropTarget = null;
+
+    this.saveData();
+    this.redraw();
   }
 
   showForm(colIndex) {
