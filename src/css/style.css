@@ -87,7 +87,6 @@ body {
   background-color: white;
   border-radius: 3px;
   padding: 8px;
-  cursor: grabbing;
   pointer-events: none;
 }
 
@@ -178,4 +177,9 @@ body {
 
 [data-widget=trello] [data-visible=no] {
   display: none;
+}
+
+[data-widget=trello].grabbing, [data-widget=trello].grabbing * {
+  cursor: grabbing;
+  touch-action: none;  
 }

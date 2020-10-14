@@ -168,6 +168,13 @@ export default class TrelloWidget {
     }
     event.preventDefault();
 
+    if (this.dragEl) {
+      this.dragEl.remove();
+      this.dragEl = null;
+      this.dropTarget.remove();
+      this.dropTarget = null;
+    }
+
     this.dragEl = event.target.cloneNode(true);
     this.dragEl.dataset.id = 'card-drag';
     this.widget.appendChild(this.dragEl);
@@ -175,8 +182,8 @@ export default class TrelloWidget {
     const {
       x, y, width, height,
     } = event.target.getBoundingClientRect();
-    this.dragEl.style.left = `${x}px`;
-    this.dragEl.style.top = `${y}px`;
+    this.dragEl.style.left = `${window.scrollX + x}px`;
+    this.dragEl.style.top = `${window.scrollY + y}px`;
     this.dragEl.style.width = `${width}px`;
 
     this.deltaXDrag = x - event.pageX;
@@ -192,6 +199,13 @@ export default class TrelloWidget {
     this.dropTarget.dataset.id = 'drop-target';
     this.dropTarget.style.width = `${width}px`;
     this.dropTarget.style.height = `${height}px`;
+
+    const deleteButtons = this.cards[colIndex].querySelectorAll(this.constructor.deleteSelector);
+    for (let i = rowIndex; i < deleteButtons.length; i++) {
+      deleteButtons[i].dataset.index = i;
+    }
+
+    this.widget.classList.add('grabbing');
   }
 
   onDrag(event) {
@@ -199,9 +213,34 @@ export default class TrelloWidget {
       return;
     }
     event.preventDefault();
-    console.log(document.elementFromPoint(event.pageX, event.pageY));
-    this.dragEl.style.left = `${event.pageX + this.deltaXDrag}px`;
-    this.dragEl.style.top = `${event.pageY + this.deltaYDrag}px`;
+
+    this.dragEl.style.left = `${window.scrollX + event.pageX + this.deltaXDrag}px`;
+    this.dragEl.style.top = `${window.scrollY + event.pageY + this.deltaYDrag}px`;
+
+    if (event.target.dataset.id === this.constructor.ctrlId.showForm) {
+      const colIndex = event.target
+        .closest(this.constructor.columnSelector)
+        .dataset.index;
+      if (this.cards[colIndex].lastElementChild !== this.dropTarget) {
+        this.dropTarget.remove();
+        this.cards[colIndex].appendChild(this.dropTarget);
+      }
+    }
+
+    if (event.target.dataset.id !== this.constructor.ctrlId.card) {
+      return;
+    }
+
+    const { y, height } = event.target.getBoundingClientRect();
+    if (event.pageY < window.scrollY + y + height / 2) {
+      if (event.target.previousElementSibling !== this.dropTarget) {
+        this.dropTarget.remove();
+        event.target.parentElement.insertBefore(this.dropTarget, event.target);
+      }
+    } else if (event.target.nextElementSibling !== this.dropTarget) {
+      this.dropTarget.remove();
+      event.target.parentElement.insertBefore(this.dropTarget, event.target.nextElementSibling);
+    }
   }
 
   onDragEnd(event) {
@@ -209,6 +248,17 @@ export default class TrelloWidget {
       return;
     }
     event.preventDefault();
+
+    this.widget.classList.remove('grabbing');
+
+    const colIndex = this.dropTarget
+      .closest(this.constructor.columnSelector)
+      .dataset.index;
+
+    const prevCard = this.dropTarget.previousElementSibling;
+    const rowIndex = prevCard ? +prevCard.querySelector('a').dataset.index + 1 : 0;
+
+    this.data[colIndex].splice(rowIndex, 0, this.dragEl.querySelector('p').textContent);
 
     this.dragEl.remove();
     this.dragEl = null;
