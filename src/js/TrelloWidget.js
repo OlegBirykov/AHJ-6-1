@@ -186,8 +186,15 @@ export default class TrelloWidget {
     this.dragEl.style.top = `${window.scrollY + y}px`;
     this.dragEl.style.width = `${width}px`;
 
-    this.deltaXDrag = x - event.pageX;
-    this.deltaYDrag = y - event.pageY;
+    let pointer;
+    if (event.pointerType === 'mouse') {
+      pointer = event;
+    } else {
+      [pointer] = event.changedTouches;
+    }
+
+    this.deltaXDrag = x - pointer.pageX;
+    this.deltaYDrag = y - pointer.pageY;
 
     const colIndex = event.target.closest(this.constructor.columnSelector)
       .dataset.index;
@@ -214,8 +221,15 @@ export default class TrelloWidget {
     }
     event.preventDefault();
 
-    this.dragEl.style.left = `${window.scrollX + event.pageX + this.deltaXDrag}px`;
-    this.dragEl.style.top = `${window.scrollY + event.pageY + this.deltaYDrag}px`;
+    let pointer;
+    if (event.pointerType === 'mouse') {
+      pointer = event;
+    } else {
+      [pointer] = event.changedTouches;
+    }
+
+    this.dragEl.style.left = `${window.scrollX + pointer.pageX + this.deltaXDrag}px`;
+    this.dragEl.style.top = `${window.scrollY + pointer.pageY + this.deltaYDrag}px`;
 
     if (event.target.dataset.id === this.constructor.ctrlId.showForm) {
       const colIndex = event.target
@@ -232,7 +246,7 @@ export default class TrelloWidget {
     }
 
     const { y, height } = event.target.getBoundingClientRect();
-    if (event.pageY < window.scrollY + y + height / 2) {
+    if (pointer.pageY < window.scrollY + y + height / 2) {
       if (event.target.previousElementSibling !== this.dropTarget) {
         this.dropTarget.remove();
         event.target.parentElement.insertBefore(this.dropTarget, event.target);
